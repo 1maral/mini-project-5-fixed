@@ -2,6 +2,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import edu.grinnell.csc207.util.KeyNotFoundException;
+import edu.grinnell.csc207.util.NullKeyException;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -47,10 +51,11 @@ public class AAC implements ActionListener {
 	 * 
 	 * @param filename the name of the file that contains the images and text that
 	 *                 will be in the AAC
+	 * @throws Exception 
 	 */
-	public AAC(String filename) {
-		this.page = new AACCategory("test");
-		// this.page = new AACMappings(filename);
+	public AAC(String filename) throws Exception {
+		// this.page = new AACCategory("test");
+		this.page = new AACMappings(filename);
 		this.images = this.page.getImageLocs();
 		this.startIndex = 0;
 		this.endIndex = Math.min(NUM_ACROSS * NUM_DOWN, this.images.length);
@@ -148,7 +153,7 @@ public class AAC implements ActionListener {
 		pane.requestFocusInWindow();
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 
 		try {
 			// Set property as Kevin Dictionary
@@ -185,7 +190,11 @@ public class AAC implements ActionListener {
 			this.endIndex = Math.min(endIndex + NUM_ACROSS * NUM_DOWN, this.images.length);
 		} else if (actionCommand.equals("save") && this.page instanceof AACMappings) {
 			((AACMappings) this.page).writeToFile("AACMappingsNew.txt");
-			this.images = this.page.getImageLocs();
+			try {
+				this.images = this.page.getImageLocs();
+			} catch (Exception e1) {
+				System.err.println(e1.getMessage());
+			}
 			this.startIndex = 0;
 			this.endIndex = Math.min(NUM_ACROSS * NUM_DOWN, this.images.length);
 		} else if (actionCommand.equals("add")) {
@@ -197,21 +206,41 @@ public class AAC implements ActionListener {
 				String result = (String) JOptionPane.showInputDialog(frame, "What is the text?", "AAC Add",
 						JOptionPane.PLAIN_MESSAGE, null, null, "");
 				if (result != null && result.length() > 0) {
-					this.page.addItem(imageLoc, result);
+					try {
+						this.page.addItem(imageLoc, result);
+					} catch (NullKeyException e1) {
+						System.err.println(e1.getMessage());
+					}
 				}
 			}
-			this.images = this.page.getImageLocs();
+			try {
+				this.images = this.page.getImageLocs();
+			} catch (Exception e1) {
+				System.err.println(e1.getMessage());
+			}
 			this.startIndex = 0;
 			this.endIndex = Math.min(NUM_ACROSS * NUM_DOWN, this.images.length);
 		} else if (actionCommand.equals("") && this.page instanceof AACMappings) {
 			((AACMappings) this.page).reset();
-			this.images = this.page.getImageLocs();
+			try {
+				this.images = this.page.getImageLocs();
+			} catch (Exception e1) {
+				System.err.println(e1.getMessage());
+			}
 			this.startIndex = 0;
 			this.endIndex = Math.min(NUM_ACROSS * NUM_DOWN, this.images.length);
 		} else {
 			if (this.page.getCategory().equals("")) {
-				this.page.select(actionCommand);
-				this.images = this.page.getImageLocs();
+				try {
+					this.page.select(actionCommand);
+				} catch (KeyNotFoundException e1) {
+					System.err.println(e1.getMessage());
+				}
+				try {
+					this.images = this.page.getImageLocs();
+				} catch (Exception e1) {
+					System.err.println(e1.getMessage());
+				}
 				this.startIndex = 0;
 				this.endIndex = Math.min(NUM_ACROSS * NUM_DOWN, this.images.length);
 			} else {
