@@ -60,7 +60,8 @@ public class AACMappings implements AACPage {
 
 		while (line != null) {
 			String[] lineArr = line.split(" ", 2);
-			if (line.charAt(0) == '<'){
+			if (line.charAt(0) == '>'){
+				arrCat.set();
 				System.out.println("its category");
 			}
 			// read next line
